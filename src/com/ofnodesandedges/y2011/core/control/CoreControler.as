@@ -4,6 +4,9 @@ package com.ofnodesandedges.y2011.core.control{
 	import com.ofnodesandedges.y2011.core.data.Node;
 	import com.ofnodesandedges.y2011.core.drawing.GraphDrawer;
 	import com.ofnodesandedges.y2011.core.interaction.InteractionControler;
+	import com.ofnodesandedges.y2011.core.layout.CircularLayout;
+	import com.ofnodesandedges.y2011.core.layout.RotationLayout;
+	import com.ofnodesandedges.y2011.core.layout.forceAtlas.ForceAtlas;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
@@ -40,7 +43,11 @@ package com.ofnodesandedges.y2011.core.control{
 		private static var _width:int = 0;
 		private static var _height:int = 0;
 		
+		private static var _isWorking:Boolean = false;
+		
 		public static function init(container:DisplayObjectContainer,width:int,height:int):void{
+			_isWorking = true;
+			
 			_container = container;
 			_width = width;
 			_height = height;
@@ -61,6 +68,14 @@ package com.ofnodesandedges.y2011.core.control{
 			_container.addEventListener(Event.ENTER_FRAME,onNewFrame);
 		}
 		
+		public static function kill():void{
+			InteractionControler.disable();
+			_container.removeEventListener(Event.ENTER_FRAME,onNewFrame);
+			
+			resetScene();
+			_isWorking = false;
+		}
+		
 		private static function onNewFrame(e:Event):void{
 			var i:int, l:int;
 			
@@ -71,7 +86,7 @@ package com.ofnodesandedges.y2011.core.control{
 			//   - 1. Layout, if needed:
 			l = _workingLayouts.length;
 			for(i=0;i<l;i++){
-				_workingLayouts[LAYOUT_HANDLER]();
+				_workingLayouts[i]();
 			}
 			
 			//   - 2. Initialize the display coordinates:
@@ -81,7 +96,7 @@ package com.ofnodesandedges.y2011.core.control{
 			//   - 3. Graphic effects:
 			l = _graphicEffects.length;
 			for(i=0;i<l;i++){
-				_graphicEffects[LAYOUT_HANDLER]();
+				_graphicEffects[i]();
 			}
 			
 			//   - 4. Draw the graph:
@@ -96,6 +111,34 @@ package com.ofnodesandedges.y2011.core.control{
 				_labelsSprite.removeChildAt(0);
 			}
 		}
+		
+		public static function addLayoutFunction(f:Function):void{
+			_workingLayouts.push(f);
+		}
+		
+		public static function removeLayoutFunction(f:Function):void{
+			var i:int, l:int = _workingLayouts.length;
+			
+			for(i=l-1;i>=0;i++){
+				if(_workingLayouts[i] == f){
+					_workingLayouts.splice(i,1);
+				}
+			}
+		}
+		
+		public static function addGraphicEffect(f:Function):void{
+			_graphicEffects.push(f);
+		}
+		
+		public static function removeGraphicEffect(f:Function):void{
+			var i:int, l:int = _graphicEffects.length;
+			
+			for(i=l-1;i>=0;i++){
+				if(_graphicEffects[i] == f){
+					_graphicEffects.splice(i,1);
+				}
+			}
+		}
 
 		public static function get width():int{
 			return _width;
@@ -104,5 +147,10 @@ package com.ofnodesandedges.y2011.core.control{
 		public static function get height():int{
 			return _height;
 		}
+
+		public static function get isWorking():Boolean{
+			return _isWorking;
+		}
+
 	}
 }

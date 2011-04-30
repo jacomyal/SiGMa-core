@@ -63,7 +63,12 @@ package com.ofnodesandedges.y2011.core.interaction{
 		public static function mouseOverNode():void{
 			var ids:Array = [];
 			
-			for each(var node:Node in Graph.nodes){
+			var nodes:Vector.<Node> = Graph.nodes, node:Node
+			var i:int, l:int = nodes.length;
+			
+			for(i=0;i<l;i++){
+				node = nodes[i];
+				
 				var dist:Number = Math.sqrt(Math.pow(_mouseX-node.displayX,2)+Math.pow(_mouseY-node.displayY,2));
 				
 				if(dist<node.displaySize){
@@ -81,18 +86,32 @@ package com.ofnodesandedges.y2011.core.interaction{
 			}
 		}
 		
+		public static function enable():void{
+			addEventListeners();
+			
+			_mouseSupport.addEventListener(Event.ADDED_TO_STAGE,addEventListeners);
+			_mouseSupport.addEventListener(Event.REMOVED_FROM_STAGE,removeEventListeners);
+		}
+		
+		public static function disable():void{
+			removeEventListeners();
+			
+			_mouseSupport.removeEventListener(Event.ADDED_TO_STAGE,addEventListeners);
+			_mouseSupport.removeEventListener(Event.REMOVED_FROM_STAGE,removeEventListeners);
+		}
+		
 		public static function addEventListener(type:String,listener:Function,useCapture:Boolean = false,priority:int = 0,useWeakReference:Boolean = false):void{
 			_eventDispatcher.addEventListener(type,listener,useCapture,priority,useWeakReference);
 		}
 		
-		public static function enable():void{
+		private static function addEventListeners(e:Event = null):void{
 			_mouseSupport.stage.addEventListener(MouseEvent.MOUSE_DOWN,mouseDown);
 			_mouseSupport.stage.addEventListener(MouseEvent.MOUSE_UP,mouseUp);
 			_mouseSupport.stage.addEventListener(MouseEvent.MOUSE_WHEEL,mouseWheel);
 			_mouseSupport.stage.addEventListener(MouseEvent.MOUSE_MOVE,mouseMove);
 		}
 		
-		public static function disable():void{
+		private static function removeEventListeners(e:Event = null):void{
 			_mouseSupport.stage.removeEventListener(MouseEvent.MOUSE_DOWN,mouseDown);
 			_mouseSupport.stage.removeEventListener(MouseEvent.MOUSE_UP,mouseUp);
 			_mouseSupport.stage.removeEventListener(MouseEvent.MOUSE_WHEEL,mouseWheel);
@@ -140,10 +159,14 @@ package com.ofnodesandedges.y2011.core.interaction{
 		
 		private static function click():void{
 			// Check if it clicks on a node:
-			var node:Node;
 			var ids:Array = [];
 			
-			for each(node in Graph.nodes){
+			var nodes:Vector.<Node> = Graph.nodes, node:Node;
+			var i:int, l:int = nodes.length;
+			
+			for(i=0;i<l;i++){
+				node = nodes[i];
+				
 				var dist:Number = Math.sqrt(Math.pow(_mouseX-node.displayX,2)+Math.pow(_mouseY-node.displayY,2));
 				
 				if(dist<node.displaySize){
