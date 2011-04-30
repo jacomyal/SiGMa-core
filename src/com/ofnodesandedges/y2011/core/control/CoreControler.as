@@ -68,9 +68,13 @@ package com.ofnodesandedges.y2011.core.control{
 			_container.addEventListener(Event.ENTER_FRAME,onNewFrame);
 		}
 		
-		public static function kill():void{
+		public static function kill(deleteGraph:Boolean):void{
 			InteractionControler.disable();
 			_container.removeEventListener(Event.ENTER_FRAME,onNewFrame);
+			
+			if(deleteGraph){
+				Graph.deleteGraph();
+			}
 			
 			resetScene();
 			_isWorking = false;
