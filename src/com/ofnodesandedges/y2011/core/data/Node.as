@@ -6,27 +6,34 @@ package com.ofnodesandedges.y2011.core.data{
 		public static const STOPPED:String = "node:stopped";
 		
 		private var _id:String;
+		private var _degree:int;
+		
+		private var _edges:Object;
 		
 		public var label:String;
 		
-		public var x:int;
-		public var y:int;
+		public var x:Number;
+		public var y:Number;
 		
-		public var displayX:int;
-		public var displayY:int;
+		public var displayX:Number;
+		public var displayY:Number;
 		
-		public var dx:int;
-		public var dy:int;
+		public var dx:Number;
+		public var dy:Number;
 		
+		public var old_dx:Number;
+		public var old_dy:Number;
+		
+		public var mass:Number;
 		public var size:Number;
 		public var displaySize:Number;
 		
 		public var color:uint;
 		public var shape:int;
 		
-		public var attributes:Object;
+		public var isFixed:Boolean;
 		
-		private var _degree:int;
+		public var attributes:Object;
 		
 		public function Node(id:String,label:String){
 			_id = id;
@@ -43,11 +50,18 @@ package com.ofnodesandedges.y2011.core.data{
 			displayY = y;
 			displaySize = size;
 			
+			mass = 1;
+			isFixed = false;
+			
+			old_dx = 0;
+			old_dy = 0;
 			dx = 0;
 			dy = 0;
 			
 			attributes = {};
 			_degree = 0;
+			
+			_edges = new Object();
 		}
 		
 		public function incrementDegree():void{
@@ -65,6 +79,11 @@ package com.ofnodesandedges.y2011.core.data{
 		public function get id():String{
 			return _id;
 		}
+
+		public function get edges():Object{
+			return _edges;
+		}
+
 
 	}
 }

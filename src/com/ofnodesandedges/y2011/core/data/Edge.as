@@ -8,6 +8,7 @@ package com.ofnodesandedges.y2011.core.data{
 		
 		public var type:int;
 		public var label:String;
+		public var weight:Number;
 		public var attributes:Object;
 		
 		public function Edge(id:String,sourceID:String,targetID:String,type:int = 0,label:String = ""){
@@ -16,6 +17,7 @@ package com.ofnodesandedges.y2011.core.data{
 			_sourceID = sourceID;
 			_targetID = targetID;
 			type = type;
+			weight = 1;
 			
 			attributes = {};
 			
