@@ -43,7 +43,11 @@ package com.ofnodesandedges.y2011.core.control{
 		private static var _width:int = 0;
 		private static var _height:int = 0;
 		
+		// Params:
 		private static var _isWorking:Boolean = false;
+		public static var displayNodes:Boolean = true;
+		public static var displayEdges:Boolean = true;
+		public static var displayLabels:Boolean = true;
 		
 		public static function init(container:DisplayObjectContainer,width:int,height:int):void{
 			_isWorking = true;
@@ -104,7 +108,11 @@ package com.ofnodesandedges.y2011.core.control{
 			}
 			
 			//   - 4. Draw the graph:
-			GraphDrawer.drawGraph(_nodesShape.graphics,_edgesShape.graphics,_labelsSprite);
+			GraphDrawer.drawGraph(
+				displayNodes ? _nodesShape.graphics : null,
+				displayEdges ? _edgesShape.graphics : null,
+				displayLabels ? _labelsSprite : null
+			);
 		}
 		
 		private static function resetScene():void{
