@@ -120,6 +120,9 @@ package com.ofnodesandedges.y2011.core.data{
 					}
 				}
 				
+				delete _nodesIndex[nodeID];
+				_nodesCount --;
+				
 				dispatchEvent(new Event(NODE_REMOVED));
 			}
 		}
@@ -131,16 +134,118 @@ package com.ofnodesandedges.y2011.core.data{
 		 * 
 		 */		
 		public static function removeEdge(edgeID:String):void{
-			if(_edgesIndex[edgeID]){
-				var edge:Edge = _edges[_edgesIndex[edgeID]];
+			if(_edgesIndex[edgeID]!=undefined && _edgesIndex[edgeID]!=null){
+				var index:int = _edgesIndex[edgeID];
+				var edge:Edge = _edges[index];
 				
-				delete _nodes[_nodesIndex[edge.sourceID]];
-				delete _nodes[_nodesIndex[edge.targetID]];
+				var key:String;
 				
-				delete _edges[_edgesIndex[edgeID]];
+				_nodes[_nodesIndex[edge.sourceID]].decrementDegree();
+				_nodes[_nodesIndex[edge.targetID]].decrementDegree();
+				
+				delete _nodes[_nodesIndex[edge.targetID]].edges[edge.id];
+				delete _nodes[_nodesIndex[edge.sourceID]].edges[edge.id];
+				
+				// Delete edge:
+				if(_edges.splice(index,1).length==0){
+					trace("pouet");
+				}
+				
+				// Update edges index:
+				for(key in _edgesIndex){
+					if(_edgesIndex[key]>index){
+						_edgesIndex[key]--;
+					}
+				}
+				
 				delete _edgesIndex[edgeID];
+				_edgesCount --;
 				
 				dispatchEvent(new Event(EDGE_REMOVED));
+			}
+		}
+		
+		/**
+		 * Regenerate the graph from a new set of nodes and edges. It will delete all the 
+		 * existing nodes and edges that are not part of the new sets, and add the missing
+		 * ones. The main advantage is that the nodes that are already existing will be kept
+		 * with the same coordinates.
+		 *  
+		 * @param newNodes	(Vector.<Node>) The new set of nodes.
+		 * @param newEdges	(Vector.<Edge>) The new set of edges.
+		 * 
+		 */		
+		public static function regenerate(newNodes:Vector.<Node>,newEdges:Vector.<Edge>):void{
+			var newNodeIDs:Object = {};
+			var newEdgeIDs:Object = {};
+			var i:int, l:int;
+			var key:String;
+			
+			// New nodes IDs extraction
+			l = newNodes.length;
+			for(i=0;i<l;i++){
+				newNodeIDs[newNodes[i].id] = 1;
+			}
+			
+			// New edges IDs extraction
+			l = newEdges.length;
+			for(i=0;i<l;i++){
+				newEdgeIDs[newEdges[i].id] = 1;
+			}
+			
+			// Remove no-more-existing nodes
+			var nodesToRemove:Array = [];
+			for(key in _nodesIndex){
+				if(!newNodeIDs[key]){
+					nodesToRemove.push(key);
+				}
+			}
+			
+			l = nodesToRemove.length;
+			for(i=0;i<l;i++){
+				removeNode(nodesToRemove[i]);
+			}
+			
+			// Remove no-more-existing edges
+			var edgesToRemove:Array = [];
+			for(key in _edgesIndex){
+				if(!newEdgeIDs[key]){
+					edgesToRemove.push(key);
+				}
+			}
+			
+			l = edgesToRemove.length;
+			for(i=0;i<l;i++){
+				removeEdge(edgesToRemove[i]);
+			}
+			
+			// Add new nodes
+			l = newNodes.length;
+			for(i=0;i<l;i++){
+				if(!_nodesIndex[newNodes[i].id]){
+					addNode(newNodes[i]);
+				}
+			}
+			
+			// Add new edges
+			l = newEdges.length;
+			for(i=0;i<l;i++){
+				if(!_edgesIndex[newEdges[i].id]){
+					addEdge(newEdges[i]);
+				}
+			}
+		}
+		
+		
+		public static function deleteGraph():void{
+			var i:int, l:int = _nodes.length;
+			for(i=l-1;i>=0;i--){
+				removeNode(_nodes[i].id);
+			}
+			
+			l = _edges.length;
+			for(i=l-1;i>=0;i--){
+				removeEdge(_edges[i].id);
 			}
 		}
 		
@@ -286,90 +391,6 @@ package com.ofnodesandedges.y2011.core.data{
 				node.displayX = (node.x-(xMax+xMin)/2)*scale + areaWidth/2;
 				node.displayY = (node.y-(yMax+yMin)/2)*scale + areaHeight/2;
 				node.displaySize = node.size*a + b;
-			}
-		}
-		
-		/**
-		 * Regenerate the graph from a new set of nodes and edges. It will delete all the 
-		 * existing nodes and edges that are not part of the new sets, and add the missing
-		 * ones. The main advantage is that the nodes that are already existing will be kept
-		 * with the same coordinates.
-		 *  
-		 * @param newNodes	(Vector.<Node>) The new set of nodes.
-		 * @param newEdges	(Vector.<Edge>) The new set of edges.
-		 * 
-		 */		
-		public static function regenerate(newNodes:Vector.<Node>,newEdges:Vector.<Edge>):void{
-			var newNodeIDs:Object = {};
-			var newEdgeIDs:Object = {};
-			var i:int, l:int;
-			var key:String;
-			
-			// New nodes IDs extraction
-			l = newNodes.length;
-			for(i=0;i<l;i++){
-				newNodeIDs[newNodes[i].id] = 1;
-			}
-			
-			// New edges IDs extraction
-			l = newEdges.length;
-			for(i=0;i<l;i++){
-				newEdgeIDs[newEdges[i].id] = 1;
-			}
-			
-			// Remove no-more-existing nodes
-			var nodesToRemove:Array = [];
-			for(key in _nodesIndex){
-				if(!newNodeIDs[key]){
-					nodesToRemove.push(key);
-				}
-			}
-			
-			l = nodesToRemove.length;
-			for(i=0;i<l;i++){
-				removeNode(nodesToRemove[i]);
-			}
-			
-			// Remove no-more-existing edges
-			var edgesToRemove:Array = [];
-			for(key in _edgesIndex){
-				if(!newEdgeIDs[key]){
-					edgesToRemove.push(key);
-				}
-			}
-			
-			l = edgesToRemove.length;
-			for(i=0;i<l;i++){
-				removeEdge(edgesToRemove[i]);
-			}
-			
-			// Add new nodes
-			l = newNodes.length;
-			for(i=0;i<l;i++){
-				if(!_nodesIndex[newNodes[i].id]){
-					addNode(newNodes[i]);
-				}
-			}
-			
-			// Add new edges
-			l = newEdges.length;
-			for(i=0;i<l;i++){
-				if(!_edgesIndex[newEdges[i].id]){
-					addEdge(newEdges[i]);
-				}
-			}
-		}
-		
-		
-		public static function deleteGraph():void{
-			var i:int, l:int = _nodes.length;
-			for(i=l-1;i>=0;i++){
-				removeNode(_nodes[i].id);
-			}
-			
-			l = _edges.length;
-			for(i=l-1;i>=0;i++){
-				removeEdge(_edges[i].id);
 			}
 		}
 		
