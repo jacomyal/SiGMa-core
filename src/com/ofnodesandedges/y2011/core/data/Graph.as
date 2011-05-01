@@ -41,6 +41,13 @@ package com.ofnodesandedges.y2011.core.data{
 		public static var defaultEdgeType:int = 1;
 		public static var defaultNodeShape:int = 0;
 		
+		/**
+		 * Adds a node into the base. If the node ID is already existing in the base,
+		 * it returns an error <code>Graph.NODE_ID_ALREADY_EXISTING</code>.
+		 *  
+		 * @param node (Node) The node to push in the base.
+		 * 
+		 */		
 		public static function addNode(node:Node):void{
 			if(_nodesIndex[node.id]==undefined || _nodesIndex[node.id]==null){
 				_nodes.push(node);
@@ -53,6 +60,16 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * Adds an edge into the base. If the edge ID is already existing in the base,
+		 * it returns an error <code>Graph.EDGE_ID_ALREADY_EXISTING</code>. Also, if one 
+		 * of the edge extremities is not existing into the base, it returns an error 
+		 * <code>Graph.MISSING_EDGE_EXTREMITIES</code>, and if the extremities are the same,
+		 * it returns an error <code>Graph.SAME_EXTREMITIES</code>.
+		 * 
+		 * @param edge (Edge) The edge to push in the base.
+		 * 
+		 */		
 		public static function addEdge(edge:Edge):void	{
 			if(_edgesIndex[edge.id]!=undefined && _edgesIndex[edge.id]!=null){
 				throw new Error(EDGE_ID_ALREADY_EXISTING);
@@ -75,6 +92,12 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * Removes a node from the base, if it exists.
+		 *  
+		 * @param nodeID (String) The ID of the node to remove.
+		 * 
+		 */		
 		public static function removeNode(nodeID:String):void{
 			if(_nodesIndex[nodeID]!=undefined && _nodesIndex[nodeID]!=null){
 				var index:int = _nodesIndex[nodeID];
@@ -101,6 +124,12 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * Removes an edge from the base, if it exists.
+		 *  
+		 * @param edgeID (String) The ID of the edge to remove.
+		 * 
+		 */		
 		public static function removeEdge(edgeID:String):void{
 			if(_edgesIndex[edgeID]){
 				var edge:Edge = _edges[_edgesIndex[edgeID]];
@@ -115,10 +144,26 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * Adds a pair to the graph meta data hash.
+		 *  
+		 * @param key	(String) The key of the new value.
+		 * @param value	(String) The new value.
+		 * 
+		 */		
 		public static function addMetaData(key:String,value:String):void{
 			_metaData[key] = value;
 		}
 		
+		/**
+		 * Adds a node attribute description to the graph.
+		 *  
+		 * @param id			(String) The attribute ID (caracterizes this attribute in each node).
+		 * @param title			(String) The attribute label.
+		 * @param type			(String) The attribute type.
+		 * @param defaultValue	(*, default-value = null) The default value of the attribute.
+		 * 
+		 */		
 		public static function addNodeAttribute(id:String,title:String,type:String,defaultValue:*=null):void{
 			_nodeAttributes[id] = new Object();
 			_nodeAttributes[id]["title"] = title;
@@ -129,6 +174,15 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * Adds an edge attribute description to the graph.
+		 *  
+		 * @param id			(String) The attribute ID (caracterizes this attribute in each edge).
+		 * @param title			(String) The attribute label.
+		 * @param type			(String) The attribute type.
+		 * @param defaultValue	(*, default-value = null) The default value of the attribute.
+		 * 
+		 */		
 		public static function addEdgeAttribute(id:String,title:String,type:String,defaultValue:*=null):void{
 			_edgeAttributes[id] = new Object();
 			_edgeAttributes[id]["title"] = title;
@@ -139,6 +193,13 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * This methods sets each node display coordinates, relatively to the position and scale ratio
+		 * of the <code>InteractionControler</code> (zoom and drag'n'drop).
+		 * 
+		 * @see com.ofnodesandedges.y2011.core.interaction.InteractionControler 
+		 * 
+		 */		
 		public static function setDisplayCoordinates():void{
 			var node:Node;
 			var i:int,l:int = _nodes.length;
@@ -152,7 +213,24 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
-		public static function rescaleNodes(areaWidth:Number,areaHeight:Number,displaySizeMin:Number = 0,displaySizeMax:Number = 15):void{
+		/**
+		 * This method sets each node display coordinates, to make the whole graph
+		 * fit in a specified rectangle (the <code>stage</code>, for example). It can also
+		 * reset the size of each node in a specified range.
+		 *  
+		 * @param areaWidth			(Number) The rectangle width.
+		 * @param areaHeight		(Number) The rectangle height.
+		 * @param displaySizeMin	(Number, default-value = 0)
+		 * 							The minimum size of the nodes. If <code>displayMinSize</code> 
+		 * 							and <code>displayMaxSize</code> are both set to zero, then
+		 * 							the nodes sizes will stay unchanged.
+		 * @param displaySizeMax	(Number, default-value = 0)
+		 * 							The maximum size of the nodes.	
+		 * 
+		 * @see com.ofnodesandedges.y2011.core.control.CoreControler
+		 * 
+		 */		
+		public static function rescaleNodes(areaWidth:Number,areaHeight:Number,displaySizeMin:Number = 0,displaySizeMax:Number = 0):void{
 			var node:Node;
 			var i:int,l:int = _nodes.length;
 			
@@ -186,16 +264,41 @@ package com.ofnodesandedges.y2011.core.data{
 			
 			var scale:Number = Math.min(0.9*areaWidth/(xMax-xMin),0.9*areaHeight/(yMax-yMin));
 			
+			// Size homothetic parameters:
+			var a:Number;
+			var b:Number;
+			
+			if(displaySizeMax == 0 && displaySizeMin == 0){
+				a = 1;
+				b = 0;
+			}else if(displaySizeMax == displaySizeMin){
+				a = 0;
+				b = displaySizeMax;
+			}else{
+				a = (displaySizeMax-displaySizeMin)/sizeMax;
+				b = displaySizeMin;
+			}
+			
 			// Rescale the nodes:
 			for(i=0;i<l;i++){
 				node = _nodes[i];
 				
 				node.displayX = (node.x-(xMax+xMin)/2)*scale + areaWidth/2;
 				node.displayY = (node.y-(yMax+yMin)/2)*scale + areaHeight/2;
-				node.displaySize = (node.size*(displaySizeMax-displaySizeMin)/sizeMax + displaySizeMin);
+				node.displaySize = node.size*a + b;
 			}
 		}
 		
+		/**
+		 * Regenerate the graph from a new set of nodes and edges. It will delete all the 
+		 * existing nodes and edges that are not part of the new sets, and add the missing
+		 * ones. The main advantage is that the nodes that are already existing will be kept
+		 * with the same coordinates.
+		 *  
+		 * @param newNodes	(Vector.<Node>) The new set of nodes.
+		 * @param newEdges	(Vector.<Edge>) The new set of edges.
+		 * 
+		 */		
 		public static function regenerate(newNodes:Vector.<Node>,newEdges:Vector.<Edge>):void{
 			var newNodeIDs:Object = {};
 			var newEdgeIDs:Object = {};
@@ -257,6 +360,7 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		
 		public static function deleteGraph():void{
 			var i:int, l:int = _nodes.length;
 			for(i=l-1;i>=0;i++){
@@ -269,14 +373,23 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 		}
 		
+		/**
+		 * @copy flash.events.EventDispatcher#addEventListener()
+		 */		
 		public static function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void{
 			_eventDispatcher.addEventListener(type,listener,useCapture,priority,useWeakReference);
 		}
 		
+		/**
+		 * @copy flash.events.EventDispatcher#removeEventListener()
+		 */		
 		public static function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void{
 			_eventDispatcher.removeEventListener(type,listener,useCapture);
 		}
 		
+		/**
+		 * @copy flash.events.EventDispatcher#dispatchEvent()
+		 */		
 		private static function dispatchEvent(event:Event):Boolean{
 			return _eventDispatcher.dispatchEvent(event);
 		}
