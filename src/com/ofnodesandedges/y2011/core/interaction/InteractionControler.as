@@ -4,7 +4,6 @@ package com.ofnodesandedges.y2011.core.interaction{
 	import com.ofnodesandedges.y2011.core.data.Graph;
 	import com.ofnodesandedges.y2011.core.data.Node;
 	import com.ofnodesandedges.y2011.utils.ContentEvent;
-	import com.ofnodesandedges.y2011.utils.StaticDispatcher;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
