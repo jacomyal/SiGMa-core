@@ -59,6 +59,9 @@ package com.ofnodesandedges.y2011.utils{
 			this.addEventListener(Event.ADDED_TO_STAGE,addedToStage);
 			this.addEventListener(Event.REMOVED_FROM_STAGE,removedFromStage);
 			
+			for(var i:int=0;i<_count;i++){
+				_lastValues.push(0);
+			}
 			
 			draw();
 		}
