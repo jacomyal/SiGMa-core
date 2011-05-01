@@ -9,12 +9,10 @@ package com.ofnodesandedges.y2011.core.drawing{
 	
 	public class LabelDrawer{
 		
-		public static function drawLabel(node:Node,ratio:Number,container:DisplayObjectContainer):void{
+		public static function drawLabel(node:Node,size:Number,color:String,font:String,container:DisplayObjectContainer):void{
 			var label:TextField = new TextField();
-			var newSize:Number = ratio*node.displaySize/10;
-			var color:String = ColorUtils.brightenColor(node.color,25).toString(16);
 			
-			label.htmlText = '<font face="Lucida Console" size="'+newSize+'" color="#'+color+'">'+node.label+'</font>';
+			label.htmlText = '<font face="'+font+'" size="'+size+'" color="#'+color+'">'+node.label+'</font>';
 			label.selectable = false;
 			label.autoSize = TextFieldAutoSize.LEFT;
 			label.x = node.displayX+node.displaySize*1.5;

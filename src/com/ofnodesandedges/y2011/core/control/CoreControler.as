@@ -43,11 +43,15 @@ package com.ofnodesandedges.y2011.core.control{
 		private static var _width:int = 0;
 		private static var _height:int = 0;
 		
-		// Params:
+		// Display parameters:
 		private static var _isWorking:Boolean = false;
+		
 		public static var displayNodes:Boolean = true;
 		public static var displayEdges:Boolean = true;
 		public static var displayLabels:Boolean = true;
+		
+		public static var minDisplaySize:Number = 0;
+		public static var maxDisplaySize:Number = 0;
 		
 		public static function init(container:DisplayObjectContainer,width:int,height:int):void{
 			_isWorking = true;
@@ -98,7 +102,7 @@ package com.ofnodesandedges.y2011.core.control{
 			}
 			
 			//   - 2. Initialize the display coordinates:
-			Graph.rescaleNodes(_width,_height);
+			Graph.rescaleNodes(_width,_height,minDisplaySize,maxDisplaySize);
 			Graph.setDisplayCoordinates();
 			
 			//   - 3. Graphic effects:

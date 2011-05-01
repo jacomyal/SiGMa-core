@@ -4,6 +4,7 @@ package com.ofnodesandedges.y2011.core.drawing{
 	import com.ofnodesandedges.y2011.core.data.Edge;
 	import com.ofnodesandedges.y2011.core.data.Graph;
 	import com.ofnodesandedges.y2011.core.data.Node;
+	import com.ofnodesandedges.y2011.utils.ColorUtils;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
@@ -11,6 +12,17 @@ package com.ofnodesandedges.y2011.core.drawing{
 	public class GraphDrawer{
 		
 		public static const NAN_VALUE:String = "A node's coordinate is not a number.";
+		
+		private static var _edgesColor:uint;
+		private static var _hasEdgesColor:Boolean = false;
+		
+		private static var _nodesColor:uint;
+		private static var _hasNodesColor:Boolean = false;
+		
+		private static var _labelsColor:uint;
+		private static var _hasLabelsColor:Boolean = false;
+		
+		public static var fontName:String;
 		
 		public static function drawGraph(nodesGraphics:Graphics,edgesGraphics:Graphics,labelsContainer:DisplayObjectContainer):void{
 			var node1:Node, node2:Node, edge:Edge;
@@ -23,37 +35,66 @@ package com.ofnodesandedges.y2011.core.drawing{
 			
 			var i:int, l1:int = nodes.length, l2:int = edges.length;
 			
+			var drawer:Function;
+			
 			// Nodes:
 			if(nodesGraphics){
+				drawer = NodeDrawer.drawNode;
+				
 				for(i=0;i<l1;i++){
 					node1 = nodes[i];
 					
 					if(isOnScreen(node1)){
-						NodeDrawer.drawNode(node1.displaySize,node1.displayX,node1.displayY,node1.color,nodesGraphics,node1.shape);
+						drawer(
+							node1.displaySize,
+							node1.displayX,
+							node1.displayY,
+							_hasNodesColor ? _nodesColor : node1.color,
+							nodesGraphics,
+							node1.shape
+						);
 					}
 				}
 			}
 			
 			// Edges:
 			if(edgesGraphics){
+				drawer = EdgeDrawer.drawEdge;
+				
 				for(i=0;i<l2;i++){
 					edge = edges[i];
 					
 					node1 = nodes[nodesIndex[edge.sourceID]];
 					node2 = nodes[nodesIndex[edge.targetID]];
+					
 					if(isOnScreen(node1) || isOnScreen(node2)){
-						EdgeDrawer.drawEdge(node1.displayX,node1.displayY,node2.displayX,node2.displayY,edgesGraphics,node1.color,edge.type);
+						drawer(
+							node1.displayX,
+							node1.displayY,
+							node2.displayX,
+							node2.displayY,
+							edgesGraphics,
+							_hasEdgesColor ? _edgesColor : node1.color,
+							edge.type
+						);
 					}
 				}
 			}
 			
 			// Labels:
 			if(labelsContainer){
+				drawer = LabelDrawer.drawLabel;
 				for(i=0;i<l1;i++){
 					node1 = nodes[i];
 					
 					if(isOnScreen(node1) && node1.displaySize>CoreControler.textThreshold){
-						LabelDrawer.drawLabel(node1,CoreControler.textSizeRatio,labelsContainer);
+						drawer(
+							node1,
+							CoreControler.textSizeRatio*node1.displaySize/10,
+							(_hasLabelsColor ? _labelsColor : ColorUtils.brightenColor(node1.color,25)).toString(16),
+							fontName,
+							labelsContainer
+						);
 					}
 				}
 			}
@@ -70,6 +111,33 @@ package com.ofnodesandedges.y2011.core.drawing{
 				&&(node.displayY-node.displaySize<CoreControler.height*4/3);
 			
 			return res;
+		}
+		
+		public static function setEdgesColor(value:* = null):void{
+			if(value is uint && value!=null){
+				_edgesColor = uint(value);
+				_hasEdgesColor = true;
+			}else{
+				_hasEdgesColor = false;
+			}
+		}
+		
+		public static function setNodesColor(value:* = null):void{
+			if(value is uint && value!=null){
+				_nodesColor = uint(value);
+				_hasNodesColor = true;
+			}else{
+				_hasNodesColor = false;
+			}
+		}
+		
+		public static function setLabelsColor(value:* = null):void{
+			if(value is uint && value!=null){
+				_labelsColor = uint(value);
+				_hasLabelsColor = true;
+			}else{
+				_hasLabelsColor = false;
+			}
 		}
 	}
 }
