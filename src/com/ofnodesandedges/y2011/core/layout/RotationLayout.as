@@ -1,11 +1,23 @@
 package com.ofnodesandedges.y2011.core.layout{
 	
+	import com.ofnodesandedges.y2011.core.control.CoreControler;
 	import com.ofnodesandedges.y2011.core.data.Graph;
 	import com.ofnodesandedges.y2011.core.data.Node;
 	
 	public class RotationLayout{
 		
-		public static function rotate(angle:Number,x:Number = 0,y:Number = 0):void{
+		public static var x:Number = 0;
+		public static var y:Number = 0;
+		public static var angle:Number = 0;
+		
+		public static function initAlgo(new_angle:Number,new_x:Number = 0,new_y:Number = 0):void{
+			angle = new_angle;
+			x = new_x;
+			y = new_y;
+			CoreControler.addLayoutFunction(rotate);
+		}
+		
+		public static function rotate():void{
 			var nodes:Vector.<Node> = Graph.nodes;
 			var node:Node;
 			
