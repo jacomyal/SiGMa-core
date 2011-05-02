@@ -105,13 +105,17 @@ package com.ofnodesandedges.y2011.core.control{
 			Graph.rescaleNodes(_width,_height,minDisplaySize,maxDisplaySize);
 			Graph.setDisplayCoordinates();
 			
+			
 			//   - 3. Graphic effects:
 			l = _graphicEffects.length;
 			for(i=0;i<l;i++){
 				_graphicEffects[i]();
 			}
 			
-			//   - 4. Draw the graph:
+			//   - 4. Check the InteractionControler:
+			InteractionControler.mouseOverNode();
+			
+			//   - 5. Draw the graph:
 			GraphDrawer.drawGraph(
 				displayNodes ? _nodesShape.graphics : null,
 				displayEdges ? _edgesShape.graphics : null,
@@ -154,6 +158,11 @@ package com.ofnodesandedges.y2011.core.control{
 					_graphicEffects.splice(i,1);
 				}
 			}
+		}
+		
+		public static function resize(w:int,h:int):void{
+			_width = w;
+			_height = h;
 		}
 
 		public static function get width():int{

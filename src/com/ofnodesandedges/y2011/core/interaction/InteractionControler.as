@@ -17,7 +17,7 @@ package com.ofnodesandedges.y2011.core.interaction{
 		private static var _eventDispatcher:EventDispatcher = new EventDispatcher();
 		
 		// Event types:
-		public static const CLICK_NODES:String = "click nodes";
+		public static const CLICK_NODES:String = "click node";
 		public static const OVER_NODES:String = "over nodes";
 		public static const CLICK_STAGE:String = "click stage";
 		
@@ -46,6 +46,8 @@ package com.ofnodesandedges.y2011.core.interaction{
 		private static var _clickTime:uint = 0;
 		private static var _isMouseDown:Boolean = false;
 		
+		private static var _nodesUnderMouse:Array;
+		
 		public static function init(mouseSupport:DisplayObject):void{
 			_mouseSupport = mouseSupport;
 			
@@ -71,16 +73,16 @@ package com.ofnodesandedges.y2011.core.interaction{
 				var dist:Number = Math.sqrt(Math.pow(_mouseX-node.displayX,2)+Math.pow(_mouseY-node.displayY,2));
 				
 				if(dist<node.displaySize){
-					node.displaySize *= 1.2;
+					node.displaySize *= 1.4;
 					node.attributes[Node.BORDER_THICKNESS] = node.displaySize/3;
 					
-					node.attributes[Node.STOPPED] = true;
+					node.isFixed = true;
 					
 					ids.push(node.id);
 					
 					dispatchEvent(new ContentEvent(OVER_NODES,ids));
 				}else{
-					node.attributes[Node.STOPPED] = false;
+					node.isFixed = false;
 				}
 			}
 		}
@@ -175,7 +177,7 @@ package com.ofnodesandedges.y2011.core.interaction{
 			}
 			
 			if(ids.length){
-				// If clicks a node:
+				// If clicks nodes:
 				dispatchEvent(new ContentEvent(CLICK_NODES,ids));
 			}else{
 				// If clicks the stage:
@@ -228,6 +230,19 @@ package com.ofnodesandedges.y2011.core.interaction{
 		private static function dispatchEvent(event:Event):void{
 			_eventDispatcher.dispatchEvent(event);
 		}
+
+		public static function get mouseX():Number{
+			return _mouseX;
+		}
+
+		public static function get mouseY():Number{
+			return _mouseY;
+		}
+
+		public static function get zoomRatio():Number{
+			return _zoomRatio;
+		}
+
 		
 	}
 }
