@@ -4,7 +4,7 @@ The core repository of SiGMa, the *Simple Graph Mapper*
 - - -
 
 Here is a simple example of how to use **SiGMa-core** in an *ActionScript 3* project:
-```actionscript
+```javascript
 // SiGMa-core use example:
 // Initialize the CoreControler, by giving it a DisplayObjectContainer 
 // the DisplayObjectContainer where to you want to draw your graph
