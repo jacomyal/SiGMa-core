@@ -46,9 +46,6 @@ package com.ofnodesandedges.y2011.core.data{
 		private static var _nodesIndex:Object = {};
 		private static var _edgesIndex:Object = {};
 		
-		private static var _nodesCount:int = 0;
-		private static var _edgesCount:int = 0;
-		
 		private static var _metaData:Object = {};
 		private static var _nodeAttributes:Object = {};
 		private static var _edgeAttributes:Object = {};
@@ -67,12 +64,11 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @param node (Node) The node to push in the base.
 		 * 
 		 */		
-		public static function addNode(node:Node):void{
+		public static function pushNode(node:Node):void{
 			if(_nodesIndex[node.id]==undefined || _nodesIndex[node.id]==null){
 				_nodes.push(node);
-				_nodesIndex[node.id] = _nodesCount;
+				_nodesIndex[node.id] = _nodes.length-1;
 				
-				_nodesCount ++;
 				dispatchEvent(new Event(NODE_ADDED));
 			}else{
 				throw new Error(NODE_ID_ALREADY_EXISTING);
@@ -89,7 +85,7 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @param edge (Edge) The edge to push in the base.
 		 * 
 		 */		
-		public static function addEdge(edge:Edge):void	{
+		public static function pushEdge(edge:Edge):void	{
 			if(_edgesIndex[edge.id]!=undefined && _edgesIndex[edge.id]!=null){
 				throw new Error(EDGE_ID_ALREADY_EXISTING);
 			}else if(_nodesIndex[edge.targetID]==undefined 
@@ -101,12 +97,11 @@ package com.ofnodesandedges.y2011.core.data{
 				throw new Error(SAME_EXTREMITIES);
 			}else{
 				_edges.push(edge);
-				_edgesIndex[edge.id] = _edgesCount;
+				_edgesIndex[edge.id] = _edges.length-1;
 				
 				_nodes[_nodesIndex[edge.targetID]].edges[edge.id] = edge.sourceID;
 				_nodes[_nodesIndex[edge.sourceID]].edges[edge.id] = edge.targetID;
 				
-				_edgesCount ++;
 				dispatchEvent(new Event(EDGE_ADDED));
 			}
 		}
@@ -117,7 +112,7 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @param nodeID (String) The ID of the node to remove.
 		 * 
 		 */		
-		public static function removeNode(nodeID:String):void{
+		public static function dropNode(nodeID:String):void{
 			if(_nodesIndex[nodeID]!=undefined && _nodesIndex[nodeID]!=null){
 				var index:int = _nodesIndex[nodeID];
 				var node:Node = _nodes[index];
@@ -126,7 +121,7 @@ package com.ofnodesandedges.y2011.core.data{
 				
 				// Remove all connected edges:
 				for(key in node.edges){
-					removeEdge(key);
+					dropEdge(key);
 				}
 				
 				// Delete node:
@@ -140,7 +135,6 @@ package com.ofnodesandedges.y2011.core.data{
 				}
 				
 				delete _nodesIndex[nodeID];
-				_nodesCount --;
 				
 				dispatchEvent(new Event(NODE_REMOVED));
 			}
@@ -152,7 +146,7 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @param edgeID (String) The ID of the edge to remove.
 		 * 
 		 */		
-		public static function removeEdge(edgeID:String):void{
+		public static function dropEdge(edgeID:String):void{
 			if(_edgesIndex[edgeID]!=undefined && _edgesIndex[edgeID]!=null){
 				var index:int = _edgesIndex[edgeID];
 				var edge:Edge = _edges[index];
@@ -178,9 +172,55 @@ package com.ofnodesandedges.y2011.core.data{
 				}
 				
 				delete _edgesIndex[edgeID];
-				_edgesCount --;
 				
 				dispatchEvent(new Event(EDGE_REMOVED));
+			}
+		}
+		
+		/**
+		 * Updates all values of a node, except the ID and the coordinates if the parameter
+		 * <code>updateCoordinates</code> is set to <code>false</code>.
+		 * <br />
+		 * Warning: The existing node and the new one are supposed to have the same ID, but
+		 * the method does not check this restriction.
+		 *  
+		 * @param node				(Node) The existing original node.
+		 * @param newNode			(Node) The new node.
+		 * @param updateCoordinates	(Boolean, default-value = false) 
+		 * 							Determines if the coordinates have to be updated or not.
+		 * 
+		 */		
+		public static function updateNode(node:Node,newNode:Node,updateCoordinates:Boolean = false):void{
+			if(updateCoordinates) node.x = newNode.x;
+			if(updateCoordinates) node.y = newNode.y;
+			node.label = newNode.label;
+			node.shape = newNode.shape;
+			node.size = newNode.size;
+			node.color = newNode.color;
+			
+			for(var key:String in newNode.attributes){
+				node.attributes[key] = newNode.attributes[key];
+			}
+		}
+		
+		/**
+		 * Updates all values of an edge from another edge, except the ID and the extremity
+		 * nodes IDs.
+		 * <br />
+		 * Warning: The existing edge and the new one are supposed to have the same ID and 
+		 * the same extremities, but the method does not check this restriction.
+		 *  
+		 * @param edge		(Edge) The existing original edge.
+		 * @param newEdge	(Edge) The new edge.
+		 * 
+		 */		
+		public static function updateEdge(edge:Edge,newEdge:Edge):void{
+			edge.label = newEdge.label;
+			edge.type = newEdge.type;
+			edge.weight = newEdge.weight;
+			
+			for(var key:String in newEdge.attributes){
+				edge.attributes[key] = newEdge.attributes[key];
 			}
 		}
 		
@@ -192,9 +232,12 @@ package com.ofnodesandedges.y2011.core.data{
 		 *  
 		 * @param newNodes	(Vector.<Node>) The new set of nodes.
 		 * @param newEdges	(Vector.<Edge>) The new set of edges.
+		 * @param update	(Boolean, default-value = true)
+		 * 					Determines if the nodes and edges that are both in the old and in
+		 * 					the new graph have to be updated or not.
 		 * 
 		 */		
-		public static function regenerate(newNodes:Vector.<Node>,newEdges:Vector.<Edge>):void{
+		public static function pushGraph(newNodes:Vector.<Node>,newEdges:Vector.<Edge>,update:Boolean = true):void{
 			var newNodeIDs:Object = {};
 			var newEdgeIDs:Object = {};
 			var i:int, l:int;
@@ -217,32 +260,36 @@ package com.ofnodesandedges.y2011.core.data{
 			for(key in _nodesIndex){
 				if(!newNodeIDs[key]){
 					nodesToRemove.push(key);
+				}else if(update){
+					updateNode(_nodes[_nodesIndex[key]],newNodeIDs[key]);
 				}
 			}
 			
 			l = nodesToRemove.length;
 			for(i=0;i<l;i++){
-				removeNode(nodesToRemove[i]);
+				dropNode(nodesToRemove[i]);
 			}
 			
-			// Remove no-more-existing edges
+			// Remove no-more-existing edges and update the others:
 			var edgesToRemove:Array = [];
 			for(key in _edgesIndex){
 				if(!newEdgeIDs[key]){
 					edgesToRemove.push(key);
+				}else if(update){
+					updateEdge(_edges[_edgesIndex[key]],newEdgeIDs[key]);
 				}
 			}
 			
 			l = edgesToRemove.length;
 			for(i=0;i<l;i++){
-				removeEdge(edgesToRemove[i]);
+				dropEdge(edgesToRemove[i]);
 			}
 			
 			// Add new nodes
 			l = newNodes.length;
 			for(i=0;i<l;i++){
 				if(!_nodesIndex[newNodes[i].id]){
-					addNode(newNodes[i]);
+					pushNode(newNodes[i]);
 				}
 			}
 			
@@ -250,7 +297,47 @@ package com.ofnodesandedges.y2011.core.data{
 			l = newEdges.length;
 			for(i=0;i<l;i++){
 				if(!_edgesIndex[newEdges[i].id]){
-					addEdge(newEdges[i]);
+					pushEdge(newEdges[i]);
+				}
+			}
+		}
+		
+		/**
+		 * Regenerate the graph from a new set of nodes and edges. It will delete all the 
+		 * existing nodes and edges that are not part of the new sets, and add the missing
+		 * ones. The main advantage is that the nodes that are already existing will be kept
+		 * with the same coordinates.
+		 *  
+		 * @param newNodes	(Vector.<Node>) The new set of nodes.
+		 * @param newEdges	(Vector.<Edge>) The new set of edges.
+		 * @param update	(Boolean, default-value = true)
+		 * 					Determines if the nodes and edges that are both in the old and in
+		 * 					the new graph have to be updated or not.
+		 * 
+		 */		
+		public static function updateGraph(newNodes:Vector.<Node>,newEdges:Vector.<Edge>,update:Boolean = true):void{
+			var newNodeIDs:Object = {};
+			var newEdgeIDs:Object = {};
+			var i:int, l:int;
+			var key:String;
+			
+			// Add new nodes
+			l = newNodes.length;
+			for(i=0;i<l;i++){
+				if(!_nodesIndex[newNodes[i].id]){
+					pushNode(newNodes[i]);
+				}else if(update){
+					updateNode(_nodesIndex[newNodes[i].id],newNodes[i]);
+				}
+			}
+			
+			// Add new edges
+			l = newEdges.length;
+			for(i=0;i<l;i++){
+				if(!_edgesIndex[newEdges[i].id]){
+					pushEdge(newEdges[i]);
+				}else if(update){
+					updateEdge(_edgesIndex[newEdges[i].id],newEdges[i]);
 				}
 			}
 		}
@@ -259,12 +346,12 @@ package com.ofnodesandedges.y2011.core.data{
 		public static function deleteGraph():void{
 			var i:int, l:int = _nodes.length;
 			for(i=l-1;i>=0;i--){
-				removeNode(_nodes[i].id);
+				dropNode(_nodes[i].id);
 			}
 			
 			l = _edges.length;
 			for(i=l-1;i>=0;i--){
-				removeEdge(_edges[i].id);
+				dropEdge(_edges[i].id);
 			}
 		}
 		
@@ -333,7 +420,7 @@ package com.ofnodesandedges.y2011.core.data{
 				
 				node.displayX = node.displayX*CoreControler.ratio + CoreControler.x;
 				node.displayY = node.displayY*CoreControler.ratio + CoreControler.y;
-				node.displaySize = node.displaySize*CoreControler.ratio;
+				node.displaySize = node.displaySize*Math.sqrt(CoreControler.ratio);
 			}
 		}
 		
@@ -452,14 +539,6 @@ package com.ofnodesandedges.y2011.core.data{
 		
 		public static function get edgeAttributes():Object{
 			return _edgeAttributes;
-		}
-
-		public static function get nodesCount():int{
-			return _nodesCount;
-		}
-
-		public static function get edgesCount():int{
-			return _edgesCount;
 		}
 
 		public static function get nodesIndex():Object{
