@@ -58,8 +58,13 @@ package com.ofnodesandedges.y2011.core.interaction{
 		
 		private static var _tempX:Number = 0;
 		private static var _tempY:Number = 0;
+		
+		private static var _fixedMouseX:Number = 0;
+		private static var _fixedMouseY:Number = 0;
+		
 		private static var _mouseX:Number = 0;
 		private static var _mouseY:Number = 0;
+		
 		private static var _zoomRatio:Number = 1;
 		
 		private static var _clickTime:uint = 0;
@@ -158,6 +163,9 @@ package com.ofnodesandedges.y2011.core.interaction{
 			_mouseX = m.stageX;
 			_mouseY = m.stageY;
 			
+			_fixedMouseX = m.stageX;
+			_fixedMouseY = m.stageY;
+			
 			if(m.delta>=0){
 				startZoomIn();
 			}else{
@@ -167,13 +175,19 @@ package com.ofnodesandedges.y2011.core.interaction{
 		
 		private static function mouseMove(m:MouseEvent):void{
 			if(_isMouseDown){
-				CoreControler.x = m.localX - _mouseX + _tempX;
-				CoreControler.y = m.localY - _mouseY + _tempY;
+				CoreControler.x = m.localX - _fixedMouseX + _tempX;
+				CoreControler.y = m.localY - _fixedMouseY + _tempY;
+				
+				_mouseX = m.localX;
+				_mouseY = m.localY;
 				
 				dispatchEvent(new ContentEvent(ON_GRAPH_MOVING,{"new_x":CoreControler.x,"new_y":CoreControler.y}));
 			}else{
 				_mouseX = m.localX;
 				_mouseY = m.localY;
+				
+				_fixedMouseX = m.stageX;
+				_fixedMouseY = m.stageY;
 			}
 		}
 		
