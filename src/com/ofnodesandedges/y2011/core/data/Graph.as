@@ -21,6 +21,7 @@ package com.ofnodesandedges.y2011.core.data{
 	
 	import com.ofnodesandedges.y2011.core.control.CoreControler;
 	import com.ofnodesandedges.y2011.core.interaction.InteractionControler;
+	import com.ofnodesandedges.y2011.utils.Trace;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -101,6 +102,9 @@ package com.ofnodesandedges.y2011.core.data{
 				
 				_nodes[_nodesIndex[edge.targetID]].edges[edge.id] = edge.sourceID;
 				_nodes[_nodesIndex[edge.sourceID]].edges[edge.id] = edge.targetID;
+				
+				_nodes[_nodesIndex[edge.targetID]].incrementDegree();
+				_nodes[_nodesIndex[edge.sourceID]].incrementDegree();
 				
 				dispatchEvent(new Event(EDGE_ADDED));
 			}
