@@ -158,25 +158,59 @@ package com.ofnodesandedges.y2011.core.control{
 		public static function removeLayoutFunction(f:Function):void{
 			var i:int, l:int = _workingLayouts.length;
 			
-			for(i=l-1;i>=0;i++){
-				if(_workingLayouts[i] == f){
-					_workingLayouts.splice(i,1);
+			if(hasLayoutFunction(f)){
+				for(i=l-1;i>=0;i--){
+					if(_workingLayouts[i] == f){
+						_workingLayouts.splice(i,1);
+					}
 				}
 			}
 		}
 		
-		public static function addGraphicEffect(f:Function):void{
-			_graphicEffects.push(f);
+		public static function hasLayoutFunction(f:Function):Boolean{
+			var result:Boolean = false;
+			var i:int, l:int = _workingLayouts.length;
+			
+			for(i=0;i<l;i++){
+				if(_workingLayouts[i] == f){
+					result = true;
+					break;
+				}
+			}
+			
+			return result;
+		}
+		
+		public static function addGraphicEffect(f:Function,unique:Boolean = true):void{
+			if(!unique || !hasGraphicEffect(f)){
+				_graphicEffects.push(f);
+			}
 		}
 		
 		public static function removeGraphicEffect(f:Function):void{
 			var i:int, l:int = _graphicEffects.length;
 			
-			for(i=l-1;i>=0;i++){
-				if(_graphicEffects[i] == f){
-					_graphicEffects.splice(i,1);
+			if(hasGraphicEffect(f)){
+				for(i=l-1;i>=0;i--){
+					if(_graphicEffects[i] == f){
+						_graphicEffects.splice(i,1);
+					}
 				}
 			}
+		}
+		
+		public static function hasGraphicEffect(f:Function):Boolean{
+			var result:Boolean = false;
+			var i:int, l:int = _graphicEffects.length;
+			
+			for(i=0;i<l;i++){
+				if(_graphicEffects[i] == f){
+					result = true;
+					break;
+				}
+			}
+			
+			return result;
 		}
 		
 		public static function resize(w:int,h:int):void{

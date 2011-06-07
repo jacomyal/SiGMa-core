@@ -35,8 +35,11 @@ package com.ofnodesandedges.y2011.core.interaction{
 					newDist = powerExp/(powerExp-1)*fishEyeRadius*(1-Math.exp(-dist/fishEyeRadius*fishEyePower));
 					newSize = powerExp/(powerExp-1)*fishEyeRadius*(1-Math.exp(-dist/fishEyeRadius*fishEyePower));
 					
-					node.displayX = mX + xDist*(newDist/dist*3/4 + 1/4);
-					node.displayY = mY + yDist*(newDist/dist*3/4 + 1/4);
+					if(!node.isFixed){
+						node.displayX = mX + xDist*(newDist/dist*3/4 + 1/4);
+						node.displayY = mY + yDist*(newDist/dist*3/4 + 1/4);
+					}
+					
 					node.displaySize = Math.min(node.displaySize*newSize/dist,10*node.displaySize);
 				}
 			}

@@ -207,19 +207,17 @@ package com.ofnodesandedges.y2011.core.layout.forceAtlas{
 			for(i=0;i<l1;i++){
 				node1 = nodes[i];
 				
-				if (!node1.isFixed){
-					// Adaptive auto-speed: the speed of each node is lowered
-					// when the node swings.
-					swinging = Math.sqrt(Math.pow(node1.old_dx - node1.dx,2) + Math.pow(node1.old_dy - node1.dy,2));
-					//double factor = speed / (1f + Math.sqrt(speed * swinging));
-					var factor:Number = _speed / (1 + _speed * Math.sqrt(swinging));
-					
-					node1.x += node1.dx*factor;
-					node1.y += node1.dy*factor;
-					
-					if(isNaN(node1.x) || isNaN(node1.y)){
-						throw(new Error(NAN_VALUE));
-					}
+				// Adaptive auto-speed: the speed of each node is lowered
+				// when the node swings.
+				swinging = Math.sqrt(Math.pow(node1.old_dx - node1.dx,2) + Math.pow(node1.old_dy - node1.dy,2));
+				//double factor = speed / (1f + Math.sqrt(speed * swinging));
+				var factor:Number = _speed / (1 + _speed * Math.sqrt(swinging));
+				
+				node1.x += node1.dx*factor;
+				node1.y += node1.dy*factor;
+				
+				if(isNaN(node1.x) || isNaN(node1.y)){
+					throw(new Error(NAN_VALUE));
 				}
 			}
 		}

@@ -95,7 +95,7 @@ package com.ofnodesandedges.y2011.core.data{
 				|| _nodesIndex[edge.sourceID]==null){
 				throw new Error(MISSING_EDGE_EXTREMITY);
 			}else if(edge.targetID == edge.sourceID){
-				throw new Error(SAME_EXTREMITIES);
+				//throw new Error(SAME_EXTREMITIES);
 			}else{
 				_edges.push(edge);
 				_edgesIndex[edge.id] = _edges.length-1;
@@ -422,8 +422,11 @@ package com.ofnodesandedges.y2011.core.data{
 			for(i=0;i<l;i++){
 				node = _nodes[i];
 				
-				node.displayX = node.displayX*CoreControler.ratio + CoreControler.x;
-				node.displayY = node.displayY*CoreControler.ratio + CoreControler.y;
+				if(!node.isFixed){
+					node.displayX = node.displayX*CoreControler.ratio + CoreControler.x;
+					node.displayY = node.displayY*CoreControler.ratio + CoreControler.y;
+				}
+				
 				node.displaySize = node.displaySize*Math.sqrt(CoreControler.ratio);
 			}
 		}
@@ -498,9 +501,12 @@ package com.ofnodesandedges.y2011.core.data{
 			for(i=0;i<l;i++){
 				node = _nodes[i];
 				
-				node.displayX = (node.x-(xMax+xMin)/2)*scale + areaWidth/2;
-				node.displayY = (node.y-(yMax+yMin)/2)*scale + areaHeight/2;
 				node.displaySize = node.size*a + b;
+				
+				if(!node.isFixed){
+					node.displayX = (node.x-(xMax+xMin)/2)*scale + areaWidth/2;
+					node.displayY = (node.y-(yMax+yMin)/2)*scale + areaHeight/2;
+				}
 			}
 		}
 		
