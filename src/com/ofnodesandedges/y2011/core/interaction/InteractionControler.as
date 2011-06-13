@@ -100,14 +100,18 @@ package com.ofnodesandedges.y2011.core.interaction{
 					node.displaySize *= 1.4;
 					node.attributes[Node.BORDER_THICKNESS] = node.displaySize/3;
 					
+					if(!node.isFixed){
+						ids.push(node.id);
+					}
+					
 					node.isFixed = true;
-					
-					ids.push(node.id);
-					
-					dispatchEvent(new ContentEvent(OVER_NODES,ids));
 				}else{
 					node.isFixed = false;
 				}
+			}
+			
+			if(ids){
+				dispatchEvent(new ContentEvent(OVER_NODES,ids));
 			}
 		}
 		

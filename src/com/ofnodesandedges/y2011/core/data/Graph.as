@@ -415,9 +415,12 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @see com.ofnodesandedges.y2011.core.interaction.InteractionControler 
 		 * 
 		 */		
-		public static function setDisplayCoordinates():void{
+		public static function setDisplayCoordinates(edges:Boolean = false):void{
 			var node:Node;
 			var i:int,l:int = _nodes.length;
+			
+			var ratio:Number = CoreControler.ratio;
+			var sqrtRatio:Number = Math.sqrt(ratio);
 			
 			for(i=0;i<l;i++){
 				node = _nodes[i];
@@ -427,7 +430,7 @@ package com.ofnodesandedges.y2011.core.data{
 					node.displayY = node.displayY*CoreControler.ratio + CoreControler.y;
 				}
 				
-				node.displaySize = node.displaySize*Math.sqrt(CoreControler.ratio);
+				node.displaySize = node.displaySize*sqrtRatio;
 			}
 		}
 		
@@ -448,9 +451,13 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @see com.ofnodesandedges.y2011.core.control.CoreControler
 		 * 
 		 */		
-		public static function rescaleNodes(areaWidth:Number,areaHeight:Number,displaySizeMin:Number = 0,displaySizeMax:Number = 0):void{
+		public static function rescaleNodes(areaWidth:Number,areaHeight:Number,displaySizeMin:Number = 0,displaySizeMax:Number = 0,edges:Boolean = false,displayThicknessMin:Number = 0,displayThicknessMax:Number = 0):void{
 			var node:Node;
 			var i:int,l:int = _nodes.length;
+			
+			// If "edges":
+			var weightMax:Number = 0;
+			var edge:Edge;
 			
 			// Find current maxima:
 			var sizeMax:Number = 0;
@@ -462,6 +469,18 @@ package com.ofnodesandedges.y2011.core.data{
 			
 			if(sizeMax==0){
 				return;
+			}
+			
+			if(edges){
+				
+				for(i=0;i<_edges.length;i++){
+					edge = _edges[i];
+					if(edge.weight>weightMax) weightMax=edge.weight;
+				}
+				
+				if(weightMax==0){
+					return;
+				}
 			}
 			
 			var xMin:Number = node.x;
@@ -497,6 +516,22 @@ package com.ofnodesandedges.y2011.core.data{
 				b = displaySizeMin;
 			}
 			
+			if(edges){
+				var c:Number;
+				var d:Number;
+				
+				if(displayThicknessMax == 0 && displayThicknessMin == 0){
+					c = 1;
+					d = 0;
+				}else if(displayThicknessMax == displayThicknessMin){
+					c = 0;
+					d = displayThicknessMin;
+				}else{
+					c = (displayThicknessMax-displayThicknessMin)/weightMax;
+					d = displayThicknessMin;
+				}
+			}
+			
 			// Rescale the nodes:
 			for(i=0;i<l;i++){
 				node = _nodes[i];
@@ -506,6 +541,14 @@ package com.ofnodesandedges.y2011.core.data{
 				if(!node.isFixed){
 					node.displayX = (node.x-(xMax+xMin)/2)*scale + areaWidth/2;
 					node.displayY = (node.y-(yMax+yMin)/2)*scale + areaHeight/2;
+				}
+			}
+			
+			if(edges){
+				// Rescale the edges:
+				for(i=0;i<_edges.length;i++){
+					edge = _edges[i];
+					edge.thickness = edge.weight*c + d;
 				}
 			}
 		}

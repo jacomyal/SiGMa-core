@@ -69,8 +69,13 @@ package com.ofnodesandedges.y2011.core.control{
 		public static var displayEdges:Boolean = true;
 		public static var displayLabels:Boolean = true;
 		
+		public static var edgeSizes:Boolean = false;
+		
 		public static var minDisplaySize:Number = 0;
 		public static var maxDisplaySize:Number = 0;
+		
+		public static var minDisplayThickness:Number = 0;
+		public static var maxDisplayThickness:Number = 0;
 		
 		public static function init(container:DisplayObjectContainer,width:int,height:int):void{
 			_isWorking = true;
@@ -121,9 +126,13 @@ package com.ofnodesandedges.y2011.core.control{
 			}
 			
 			//   - 2. Initialize the display coordinates:
-			Graph.rescaleNodes(_width,_height,minDisplaySize,maxDisplaySize);
-			Graph.setDisplayCoordinates();
+			if(edgeSizes && displayEdges){
+				Graph.rescaleNodes(_width,_height,minDisplaySize,maxDisplaySize,edgeSizes,minDisplayThickness,maxDisplayThickness);
+			}else{
+				Graph.rescaleNodes(_width,_height,minDisplaySize,maxDisplaySize);
+			}
 			
+			Graph.setDisplayCoordinates();
 			
 			//   - 3. Graphic effects:
 			l = _graphicEffects.length;

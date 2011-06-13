@@ -94,7 +94,8 @@ package com.ofnodesandedges.y2011.core.drawing{
 							node2.displayY,
 							edgesGraphics,
 							_hasEdgesColor ? _edgesColor : node1.color,
-							edge.type
+							edge.type,
+							edge.thickness ? edge.thickness : 1
 						);
 					}
 				}

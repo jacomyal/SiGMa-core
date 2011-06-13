@@ -55,5 +55,21 @@ package com.ofnodesandedges.y2011.utils{
 			
 			return (redOffset<<16|greenOffset<<8|blueOffset);
 		}
+		
+		public static function inBetweenColor(color1:Number, color2:Number, perc:Number):Number{
+			var blueOffset1:Number = color1 % 256;
+			var greenOffset1:Number = ( color1 >> 8 ) % 256;
+			var redOffset1:Number = ( color1 >> 16 ) % 256;
+			
+			var blueOffset2:Number = color2 % 256;
+			var greenOffset2:Number = ( color2 >> 8 ) % 256;
+			var redOffset2:Number = ( color2 >> 16 ) % 256;
+			
+			var blueOffset3:Number = perc*blueOffset1 + (1-perc)*blueOffset2;
+			var greenOffset3:Number = perc*greenOffset1 + (1-perc)*greenOffset2;
+			var redOffset3:Number = perc*redOffset1 + (1-perc)*redOffset2;
+			
+			return (redOffset3<<16|greenOffset3<<8|blueOffset3);
+		}
 	}
 }
