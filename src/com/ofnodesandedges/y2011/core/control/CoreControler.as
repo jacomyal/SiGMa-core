@@ -38,8 +38,8 @@ package com.ofnodesandedges.y2011.core.control{
 		private static const LAYOUT_HANDLER:String = "layout_handler";
 		
 		// Options:
-		private static var _workingLayouts:Vector.<Function> = new Vector.<Function>();
-		private static var _graphicEffects:Vector.<Function> = new Vector.<Function>();
+		private static var _preProcessHooks:Vector.<Function> = new Vector.<Function>();
+		private static var _postProcessHooks:Vector.<Function> = new Vector.<Function>();
 		
 		public static var textSizeRatio:Number = 24;
 		public static var textThreshold:Number = 18;
@@ -119,10 +119,10 @@ package com.ofnodesandedges.y2011.core.control{
 			//   - 0. Reset the stage:
 			resetScene();
 			
-			//   - 1. Layout, if needed:
-			l = _workingLayouts.length;
+			//   - 1. Pre-process hooks:
+			l = _preProcessHooks.length;
 			for(i=0;i<l;i++){
-				_workingLayouts[i]();
+				_preProcessHooks[i]();
 			}
 			
 			//   - 2. Initialize the display coordinates:
@@ -134,10 +134,10 @@ package com.ofnodesandedges.y2011.core.control{
 			
 			Graph.setDisplayCoordinates();
 			
-			//   - 3. Graphic effects:
-			l = _graphicEffects.length;
+			//   - 3. Post-process hooks:
+			l = _postProcessHooks.length;
 			for(i=0;i<l;i++){
-				_graphicEffects[i]();
+				_postProcessHooks[i]();
 			}
 			
 			//   - 4. Check the InteractionControler:
@@ -160,28 +160,28 @@ package com.ofnodesandedges.y2011.core.control{
 			}
 		}
 		
-		public static function addLayoutFunction(f:Function):void{
-			_workingLayouts.push(f);
+		public static function addPreProcessHook(f:Function):void{
+			_preProcessHooks.push(f);
 		}
 		
-		public static function removeLayoutFunction(f:Function):void{
-			var i:int, l:int = _workingLayouts.length;
+		public static function removePreProcessHook(f:Function):void{
+			var i:int, l:int = _preProcessHooks.length;
 			
-			if(hasLayoutFunction(f)){
+			if(hasPreProcessHook(f)){
 				for(i=l-1;i>=0;i--){
-					if(_workingLayouts[i] == f){
-						_workingLayouts.splice(i,1);
+					if(_preProcessHooks[i] == f){
+						_preProcessHooks.splice(i,1);
 					}
 				}
 			}
 		}
 		
-		public static function hasLayoutFunction(f:Function):Boolean{
+		public static function hasPreProcessHook(f:Function):Boolean{
 			var result:Boolean = false;
-			var i:int, l:int = _workingLayouts.length;
+			var i:int, l:int = _preProcessHooks.length;
 			
 			for(i=0;i<l;i++){
-				if(_workingLayouts[i] == f){
+				if(_preProcessHooks[i] == f){
 					result = true;
 					break;
 				}
@@ -190,30 +190,30 @@ package com.ofnodesandedges.y2011.core.control{
 			return result;
 		}
 		
-		public static function addGraphicEffect(f:Function,unique:Boolean = true):void{
-			if(!unique || !hasGraphicEffect(f)){
-				_graphicEffects.push(f);
+		public static function addPostProcessHook(f:Function,unique:Boolean = true):void{
+			if(!unique || !hasPostProcessHook(f)){
+				_postProcessHooks.push(f);
 			}
 		}
 		
-		public static function removeGraphicEffect(f:Function):void{
-			var i:int, l:int = _graphicEffects.length;
+		public static function removePostProcessHook(f:Function):void{
+			var i:int, l:int = _postProcessHooks.length;
 			
-			if(hasGraphicEffect(f)){
+			if(hasPostProcessHook(f)){
 				for(i=l-1;i>=0;i--){
-					if(_graphicEffects[i] == f){
-						_graphicEffects.splice(i,1);
+					if(_postProcessHooks[i] == f){
+						_postProcessHooks.splice(i,1);
 					}
 				}
 			}
 		}
 		
-		public static function hasGraphicEffect(f:Function):Boolean{
+		public static function hasPostProcessHook(f:Function):Boolean{
 			var result:Boolean = false;
-			var i:int, l:int = _graphicEffects.length;
+			var i:int, l:int = _postProcessHooks.length;
 			
 			for(i=0;i<l;i++){
-				if(_graphicEffects[i] == f){
+				if(_postProcessHooks[i] == f){
 					result = true;
 					break;
 				}

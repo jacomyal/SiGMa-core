@@ -46,11 +46,11 @@ package com.ofnodesandedges.y2011.core.layout.forceAtlas{
 		
 		public static function initAlgo():void{
 			initParams();
-			CoreControler.addLayoutFunction(computeOneStep);
+			CoreControler.addPreProcessHook(computeOneStep);
 		}
 		
 		public static function killAlgo():void{
-			CoreControler.removeLayoutFunction(computeOneStep);
+			CoreControler.removePreProcessHook(computeOneStep);
 		}
 		
 		private static function initParams():void{
