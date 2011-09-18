@@ -110,7 +110,7 @@ package com.ofnodesandedges.y2011.core.interaction{
 				}
 			}
 			
-			if(ids){
+			if(ids.length){
 				dispatchEvent(new ContentEvent(OVER_NODES,ids));
 			}
 		}
