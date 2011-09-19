@@ -259,6 +259,21 @@ package com.ofnodesandedges.y2011.core.data{
 				newEdgeIDs[newEdges[i].id] = 1;
 			}
 			
+			// Remove no-more-existing edges:
+			var edgesToRemove:Array = [];
+			for(key in _edgesIndex){
+				if(!newEdgeIDs[key]){
+					edgesToRemove.push(key);
+				}else if(update){
+					updateEdge(_edges[_edgesIndex[key]],newEdgeIDs[key]);
+				}
+			}
+			
+			l = edgesToRemove.length;
+			for(i=0;i<l;i++){
+				dropEdge(edgesToRemove[i]);
+			}
+			
 			// Remove no-more-existing nodes
 			var nodesToRemove:Array = [];
 			for(key in _nodesIndex){
@@ -274,42 +289,30 @@ package com.ofnodesandedges.y2011.core.data{
 				dropNode(nodesToRemove[i]);
 			}
 			
-			// Remove no-more-existing edges and update the others:
-			var edgesToRemove:Array = [];
-			for(key in _edgesIndex){
-				if(!newEdgeIDs[key]){
-					edgesToRemove.push(key);
-				}else if(update){
-					updateEdge(_edges[_edgesIndex[key]],newEdgeIDs[key]);
-				}
-			}
-			
-			l = edgesToRemove.length;
-			for(i=0;i<l;i++){
-				dropEdge(edgesToRemove[i]);
-			}
-			
-			// Add new nodes
+			// Add new nodes or update them:
 			l = newNodes.length;
 			for(i=0;i<l;i++){
-				if(!_nodesIndex[newNodes[i].id]){
+				if(_nodesIndex[newNodes[i].id]==null || _nodesIndex[newNodes[i].id]==undefined){
 					pushNode(newNodes[i]);
+				}else if(update){
+					updateNode(_nodes[_nodesIndex[newNodes[i].id]],newNodes[i]);
 				}
 			}
 			
-			// Add new edges
+			// Add new edges or update them:
 			l = newEdges.length;
 			for(i=0;i<l;i++){
-				if(!_edgesIndex[newEdges[i].id]){
+				if(_edgesIndex[newEdges[i].id]==null || _edgesIndex[newEdges[i].id]==undefined){
 					pushEdge(newEdges[i]);
+				}else if(update){
+					updateEdge(_edges[_edgesIndex[newEdges[i].id]],newEdges[i]);
 				}
 			}
 		}
 		
 		/**
-		 * Regenerate the graph from a new set of nodes and edges. It will delete all the 
-		 * existing nodes and edges that are not part of the new sets, and add the missing
-		 * ones. The main advantage is that the nodes that are already existing will be kept
+		 * Regenerate the graph from a new set of nodes and edges. It will add the missing
+		 * nodes, and let the others. The main advantage is that the nodes that are already existing will be kept
 		 * with the same coordinates.
 		 *  
 		 * @param newNodes	(Vector.<Node>) The new set of nodes.
@@ -325,23 +328,23 @@ package com.ofnodesandedges.y2011.core.data{
 			var i:int, l:int;
 			var key:String;
 			
-			// Add new nodes
+			// Add new nodes or update them:
 			l = newNodes.length;
 			for(i=0;i<l;i++){
-				if(!_nodesIndex[newNodes[i].id]){
+				if(_nodesIndex[newNodes[i].id]==null || _nodesIndex[newNodes[i].id]==undefined){
 					pushNode(newNodes[i]);
 				}else if(update){
-					updateNode(_nodesIndex[newNodes[i].id],newNodes[i]);
+					updateNode(_nodes[_nodesIndex[newNodes[i].id]],newNodes[i]);
 				}
 			}
 			
-			// Add new edges
+			// Add new edges or update them:
 			l = newEdges.length;
 			for(i=0;i<l;i++){
-				if(!_edgesIndex[newEdges[i].id]){
+				if(_edgesIndex[newEdges[i].id]==null || _edgesIndex[newEdges[i].id]==undefined){
 					pushEdge(newEdges[i]);
 				}else if(update){
-					updateEdge(_edgesIndex[newEdges[i].id],newEdges[i]);
+					updateEdge(_edges[_edgesIndex[newEdges[i].id]],newEdges[i]);
 				}
 			}
 		}
