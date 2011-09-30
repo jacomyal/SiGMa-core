@@ -33,7 +33,7 @@ package com.ofnodesandedges.y2011.core.layout{
 			angle = new_angle;
 			x = new_x;
 			y = new_y;
-			CoreControler.addLayoutFunction(rotate);
+			CoreControler.addPreProcessHook(rotate);
 		}
 		
 		public static function rotate():void{
