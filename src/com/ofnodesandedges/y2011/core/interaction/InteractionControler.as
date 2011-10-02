@@ -164,11 +164,11 @@ package com.ofnodesandedges.y2011.core.interaction{
 		}
 		
 		private static function mouseWheel(m:MouseEvent):void{
-			_mouseX = m.stageX;
-			_mouseY = m.stageY;
+			_mouseX = m.localX;
+			_mouseY = m.localY;
 			
-			_fixedMouseX = m.stageX;
-			_fixedMouseY = m.stageY;
+			_fixedMouseX = m.localX;
+			_fixedMouseY = m.localY;
 			
 			if(m.delta>=0){
 				startZoomIn();
@@ -190,8 +190,8 @@ package com.ofnodesandedges.y2011.core.interaction{
 				_mouseX = m.localX;
 				_mouseY = m.localY;
 				
-				_fixedMouseX = m.stageX;
-				_fixedMouseY = m.stageY;
+				_fixedMouseX = m.localX;
+				_fixedMouseY = m.localY;
 			}
 		}
 		
