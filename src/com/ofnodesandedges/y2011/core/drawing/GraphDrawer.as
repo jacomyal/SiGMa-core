@@ -32,11 +32,10 @@ package com.ofnodesandedges.y2011.core.drawing{
 		
 		public static const NAN_VALUE:String = "A node's coordinate is not a number.";
 		
+		private static var _nodesColor:uint;
+		
 		private static var _edgesColor:uint;
 		private static var _hasEdgesColor:Boolean = false;
-		
-		private static var _nodesColor:uint;
-		private static var _hasNodesColor:Boolean = false;
 		
 		private static var _labelsColor:uint;
 		private static var _hasLabelsColor:Boolean = false;
@@ -68,7 +67,7 @@ package com.ofnodesandedges.y2011.core.drawing{
 							node1.displaySize,
 							node1.displayX,
 							node1.displayY,
-							_hasNodesColor ? _nodesColor : node1.color,
+							node1.color ? node1.color : _nodesColor,
 							nodesGraphics,
 							node1.shape
 						);
@@ -142,13 +141,8 @@ package com.ofnodesandedges.y2011.core.drawing{
 			}
 		}
 		
-		public static function setNodesColor(value:* = null):void{
-			if(value is uint && value!=null){
-				_nodesColor = uint(value);
-				_hasNodesColor = true;
-			}else{
-				_hasNodesColor = false;
-			}
+		public static function setNodesColor(value:uint):void{
+			_nodesColor = value;
 		}
 		
 		public static function setLabelsColor(value:* = null):void{
