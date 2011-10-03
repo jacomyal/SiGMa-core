@@ -164,21 +164,23 @@ package com.ofnodesandedges.y2011.core.interaction{
 		}
 		
 		private static function mouseWheel(m:MouseEvent):void{
-			_mouseX = m.localX;
-			_mouseY = m.localY;
-			
-			_fixedMouseX = m.localX;
-			_fixedMouseY = m.localY;
-			
-			if(m.delta>=0){
-				startZoomIn();
-			}else{
-				startZoomOut();
+			if(CoreControler.isZoomable){
+				_mouseX = m.localX;
+				_mouseY = m.localY;
+				
+				_fixedMouseX = m.localX;
+				_fixedMouseY = m.localY;
+				
+				if(m.delta>=0){
+					startZoomIn();
+				}else{
+					startZoomOut();
+				}
 			}
 		}
 		
 		private static function mouseMove(m:MouseEvent):void{
-			if(_isMouseDown){
+			if(_isMouseDown && CoreControler.isDraggable){
 				CoreControler.x = m.localX - _fixedMouseX + _tempX;
 				CoreControler.y = m.localY - _fixedMouseY + _tempY;
 				

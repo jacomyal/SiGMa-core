@@ -24,7 +24,7 @@ package com.ofnodesandedges.y2011.core.layout{
 	
 	public class CircularLayout{
 		
-		public static function apply(radius:Number,x:Number = 0,y:Number = 0):void{
+		public static function apply(radius:Number = 100,x:Number = 0,y:Number = 0):void{
 			var nodes:Vector.<Node> = Graph.nodes;
 			var count:int = nodes.length;
 			var node:Node;

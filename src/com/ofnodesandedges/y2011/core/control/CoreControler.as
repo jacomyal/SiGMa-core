@@ -69,6 +69,9 @@ package com.ofnodesandedges.y2011.core.control{
 		public static var displayEdges:Boolean = true;
 		public static var displayLabels:Boolean = true;
 		
+		public static var isDraggable:Boolean = true;
+		public static var isZoomable:Boolean = true;
+		
 		public static var edgeSizes:Boolean = false;
 		
 		public static var minDisplaySize:Number = 0;
