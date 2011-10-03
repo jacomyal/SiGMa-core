@@ -59,7 +59,6 @@ package com.ofnodesandedges.y2011.core.data{
 			this.label = label;
 			
 			size = 1;
-			color = 0x808080;
 			shape = 0;
 			
 			x = 0;
