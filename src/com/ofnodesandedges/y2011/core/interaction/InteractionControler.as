@@ -165,11 +165,11 @@ package com.ofnodesandedges.y2011.core.interaction{
 		
 		private static function mouseWheel(m:MouseEvent):void{
 			if(CoreControler.isZoomable){
-				_mouseX = m.localX;
-				_mouseY = m.localY;
+				_mouseX = _mouseSupport.mouseX;
+				_mouseY = _mouseSupport.mouseY;
 				
-				_fixedMouseX = m.localX;
-				_fixedMouseY = m.localY;
+				_fixedMouseX = _mouseSupport.mouseX;
+				_fixedMouseY = _mouseSupport.mouseY;
 				
 				if(m.delta>=0){
 					startZoomIn();
@@ -181,19 +181,19 @@ package com.ofnodesandedges.y2011.core.interaction{
 		
 		private static function mouseMove(m:MouseEvent):void{
 			if(_isMouseDown && CoreControler.isDraggable){
-				CoreControler.x = m.localX - _fixedMouseX + _tempX;
-				CoreControler.y = m.localY - _fixedMouseY + _tempY;
+				CoreControler.x = _mouseSupport.mouseX - _fixedMouseX + _tempX;
+				CoreControler.y = _mouseSupport.mouseY - _fixedMouseY + _tempY;
 				
-				_mouseX = m.localX;
-				_mouseY = m.localY;
+				_mouseX = _mouseSupport.mouseX;
+				_mouseY = _mouseSupport.mouseY;
 				
 				dispatchEvent(new ContentEvent(ON_GRAPH_MOVING,{"new_x":CoreControler.x,"new_y":CoreControler.y}));
 			}else{
-				_mouseX = m.localX;
-				_mouseY = m.localY;
+				_mouseX = _mouseSupport.mouseX;
+				_mouseY = _mouseSupport.mouseY;
 				
-				_fixedMouseX = m.localX;
-				_fixedMouseY = m.localY;
+				_fixedMouseX = _mouseSupport.mouseX;
+				_fixedMouseY = _mouseSupport.mouseY;
 			}
 		}
 		
