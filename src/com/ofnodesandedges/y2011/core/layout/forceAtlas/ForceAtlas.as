@@ -132,7 +132,7 @@ package com.ofnodesandedges.y2011.core.layout.forceAtlas{
 			}
 			
 			// Initialise layout data
-			nodes.map(function(node:Node,index:int,arr:Vector.<Node>):void{
+			nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
 				node.mass = 1 + node.degree;
 				node.old_dx = node.dx;
 				node.old_dy = node.dy;
@@ -148,7 +148,7 @@ package com.ofnodesandedges.y2011.core.layout.forceAtlas{
 			
 			// Repulsion
 			if(_isBarnesHutOptimize){
-				nodes.map(function(node:Node,index:int,arr:Vector.<Node>):void{
+				nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
 					rootRegion.applyForce(node,_scalingRatio,_theta);
 				});
 			} else {
@@ -169,7 +169,7 @@ package com.ofnodesandedges.y2011.core.layout.forceAtlas{
 			var attraction:Function = LinearAttraction.apply;
 			var powa:Number;
 			
-			edges.map(function(edge:Edge,index:int,arr:Vector.<Edge>):void{
+			edges.forEach(function(edge:Edge,index:int,arr:Vector.<Edge>):void{
 				powa = Math.min((_edgeWeightInfluence!=1) ? Math.pow(edge.weight,_edgeWeightInfluence) : edge.weight,_maxEdgeWeight);
 				
 				attraction(
@@ -187,43 +187,45 @@ package com.ofnodesandedges.y2011.core.layout.forceAtlas{
 			var totalEffectiveTraction:Number = 0;  // Hom much useful movement
 			var swinging:Number;
 			
-			nodes.map(function(node:Node,index:int,arr:Vector.<Node>):void{
+			nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
 				gravity(
 					node,
 					_gravity/_scalingRatio,
 					1
 				);
 				
-				if (!node.isFixed){
+				/*if (!node.isFixed){
 					swinging = Math.sqrt(Math.pow(node.old_dx - node.dx,2) + Math.pow(node.old_dy - node.dy,2));
 					totalSwinging += node.mass * swinging;   // If the node has a burst change of direction, then it's not converging.
 					totalEffectiveTraction += node.mass * 0.5 * Math.sqrt(Math.pow(node.old_dx + node.dx,2) + Math.pow(node.old_dy + node.dy,2));
-				}
+				}*/
 			});
 			
 			// We want that swingingMovement < tolerance * convergenceMovement
-			var targetSpeed:Number = _jitterTolerance * _jitterTolerance * totalEffectiveTraction / totalSwinging;
+			//var targetSpeed:Number = _jitterTolerance * _jitterTolerance * totalEffectiveTraction / totalSwinging;
 			
 			// But the speed shoudn't rise too much too quickly, since it would make the convergence drop dramatically.
-			var maxRise:Number = 2;   // Max rise: 20%
-			_speed = Math.min(targetSpeed, maxRise*_speed);
+			var maxRise:Number = 500;   // Max rise: 20%
+			//_speed = Math.min(targetSpeed, maxRise*_speed);
 			// (this can be modified)
 			
 			// Reset quantity of movement:
 			_moveQuantity = 0;
 			
 			// Apply forces
-			nodes.map(function(node:Node,index:int,arr:Vector.<Node>):void{
+			nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
 				// Adaptive auto-speed: the speed of each node is lowered when the node swings.
 				swinging = Math.sqrt(Math.pow(node.old_dx - node.dx,2) + Math.pow(node.old_dy - node.dy,2));
 				
 				var factor:Number = _speed / (1 + _speed * Math.sqrt(swinging));
 				
-				_moveQuantity += Math.sqrt(Math.pow(node.dx*factor,2)+Math.pow(node.dy*factor,2));
+				//_moveQuantity += Math.sqrt(Math.pow(node.dx*factor,2)+Math.pow(node.dy*factor,2));
 				
 				// Appl
-				node.x += node.dx*factor;
-				node.y += node.dy*factor;
+				node.old_x = node.x;
+				node.old_y = node.y;
+				node.x = node.x+node.dx*factor;
+				node.y = node.y+node.dy*factor;
 				
 				if(isNaN(node.x) || isNaN(node.y)){
 					throw(new Error(NAN_VALUE));

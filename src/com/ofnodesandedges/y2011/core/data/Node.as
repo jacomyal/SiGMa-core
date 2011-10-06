@@ -34,6 +34,9 @@ package com.ofnodesandedges.y2011.core.data{
 		public var x:Number;
 		public var y:Number;
 		
+		public var old_x:Number;
+		public var old_y:Number;
+		
 		public var displayX:Number;
 		public var displayY:Number;
 		
@@ -63,6 +66,8 @@ package com.ofnodesandedges.y2011.core.data{
 			
 			x = 0;
 			y = 0;
+			old_x = 0;
+			old_y = 0;
 			
 			displayX = x;
 			displayY = y;

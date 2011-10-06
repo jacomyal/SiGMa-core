@@ -454,53 +454,45 @@ package com.ofnodesandedges.y2011.core.data{
 		 * @see com.ofnodesandedges.y2011.core.control.CoreControler
 		 * 
 		 */		
-		public static function rescaleNodes(areaWidth:Number,areaHeight:Number,displaySizeMin:Number = 0,displaySizeMax:Number = 0,edges:Boolean = false,displayThicknessMin:Number = 0,displayThicknessMax:Number = 0):void{
-			var node:Node;
-			var i:int,l:int = _nodes.length;
-			
+		public static function rescaleNodes(areaWidth:Number,areaHeight:Number,displaySizeMin:Number = 0,displaySizeMax:Number = 0,edges:Boolean = false,displayThicknessMin:Number = 0,displayThicknessMax:Number = 0,friction:Number = 0.5):void{
 			// If "edges":
 			var weightMax:Number = 0;
-			var edge:Edge;
 			
 			// Find current maxima:
 			var sizeMax:Number = 0;
 			
-			for(i=0;i<l;i++){
-				node = _nodes[i];
-				if(node.size>sizeMax) sizeMax=node.size;
-			}
+			_nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
+				sizeMax = Math.max(node.size,sizeMax);
+				node.displayX = friction*node.old_x+(1-friction)*node.x;
+				node.displayY = friction*node.old_y+(1-friction)*node.y;
+			});
 			
-			if(sizeMax==0){
+			if(sizeMax==0 || !_nodes.length){
 				return;
 			}
 			
 			if(edges){
-				
-				for(i=0;i<_edges.length;i++){
-					edge = _edges[i];
-					if(edge.weight>weightMax) weightMax=edge.weight;
-				}
+				_edges.forEach(function(edge:Edge,index:int,arr:Vector.<Edge>):void{
+					weightMax = Math.max(edge.weight,weightMax);
+				});
 				
 				if(weightMax==0){
 					return;
 				}
 			}
 			
-			var xMin:Number = node.x;
-			var xMax:Number = node.x;
-			var yMin:Number = node.y;
-			var yMax:Number = node.y;
+			var xMin:Number = _nodes[0].displayX;
+			var xMax:Number = _nodes[0].displayX;
+			var yMin:Number = _nodes[0].displayY;
+			var yMax:Number = _nodes[0].displayY;
 			
 			// Recenter the nodes:
-			for(i=0;i<l;i++){
-				node = _nodes[i];
-				
-				if(node.x>xMax) xMax = node.x;
-				if(node.x<xMin) xMin = node.x;
-				if(node.y>yMax) yMax = node.y;
-				if(node.y<yMin) yMin = node.y; 
-				if(node.size>sizeMax) sizeMax = node.size;
-			}
+			_nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
+				xMax = Math.max(node.displayX,xMax);
+				xMin = Math.min(node.displayX,xMin);
+				yMax = Math.max(node.displayY,yMax);
+				yMin = Math.min(node.displayY,yMin);
+			});
 			
 			var scale:Number = Math.min(0.9*areaWidth/(xMax-xMin),0.9*areaHeight/(yMax-yMin));
 			
@@ -536,23 +528,20 @@ package com.ofnodesandedges.y2011.core.data{
 			}
 			
 			// Rescale the nodes:
-			for(i=0;i<l;i++){
-				node = _nodes[i];
-				
+			_nodes.forEach(function(node:Node,index:int,arr:Vector.<Node>):void{
 				node.displaySize = node.size*a + b;
 				
 				if(!node.isFixed){
-					node.displayX = (node.x-(xMax+xMin)/2)*scale + areaWidth/2;
-					node.displayY = (node.y-(yMax+yMin)/2)*scale + areaHeight/2;
+					node.displayX = (node.displayX-(xMax+xMin)/2)*scale + areaWidth/2;
+					node.displayY = (node.displayY-(yMax+yMin)/2)*scale + areaHeight/2;
 				}
-			}
+			});
 			
 			if(edges){
 				// Rescale the edges:
-				for(i=0;i<_edges.length;i++){
-					edge = _edges[i];
+				_edges.forEach(function(edge:Edge,index:int,arr:Vector.<Edge>):void{
 					edge.thickness = edge.weight*c + d;
-				}
+				});
 			}
 		}
 		
